@@ -1,0 +1,10 @@
+[  0%] Built target darknet_ros_msgs_generate_messages_cpp
+[  1%] [32m[1mLinking CXX shared library /home/pranit/catkin_ws/devel/.private/darknet_ros/lib/libdarknet_ros_lib.so[0m
+CMakeFiles/darknet_ros_lib.dir/src/YoloObjectDetector.cpp.o: file not recognized: File truncated
+collect2: error: ld returned 1 exit status
+CMakeFiles/darknet_ros_lib.dir/build.make:3791: recipe for target '/home/pranit/catkin_ws/devel/.private/darknet_ros/lib/libdarknet_ros_lib.so' failed
+make[2]: *** [/home/pranit/catkin_ws/devel/.private/darknet_ros/lib/libdarknet_ros_lib.so] Error 1
+CMakeFiles/Makefile2:815: recipe for target 'CMakeFiles/darknet_ros_lib.dir/all' failed
+make[1]: *** [CMakeFiles/darknet_ros_lib.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2

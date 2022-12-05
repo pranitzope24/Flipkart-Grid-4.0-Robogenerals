@@ -1,0 +1,99 @@
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+In file included from /usr/include/host_config.h:50:0,
+                 from /usr/include/cuda_runtime.h:78,
+                 from <command-line>:0:
+/usr/include/crt/host_config.h:121:2: error: #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+ #error -- unsupported GNU version! gcc versions later than 6 are not supported!
+  ^~~~~
+CMake Error at darknet_ros_lib_generated_activation_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_activation_kernels.cu.o
+
+CMake Error at darknet_ros_lib_generated_col2im_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_col2im_kernels.cu.o
+
+
+
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_activation_kernels.cu.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_col2im_kernels.cu.o] Error 1
+CMake Error at darknet_ros_lib_generated_blas_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_blas_kernels.cu.o
+
+
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_blas_kernels.cu.o] Error 1
+CMake Error at darknet_ros_lib_generated_dropout_layer_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_dropout_layer_kernels.cu.o
+
+
+CMake Error at darknet_ros_lib_generated_deconvolutional_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_deconvolutional_kernels.cu.o
+
+
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_dropout_layer_kernels.cu.o] Error 1
+CMake Error at darknet_ros_lib_generated_maxpool_layer_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_maxpool_layer_kernels.cu.o
+
+
+CMake Error at darknet_ros_lib_generated_avgpool_layer_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_avgpool_layer_kernels.cu.o
+
+
+CMake Error at darknet_ros_lib_generated_crop_layer_kernels.cu.o.cmake:219 (message):
+  Error generating
+  /home/pranit/catkin_ws/build/darknet_ros/CMakeFiles/darknet_ros_lib.dir/__/darknet/src/./darknet_ros_lib_generated_crop_layer_kernels.cu.o
+
+
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_deconvolutional_kernels.cu.o] Error 1
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_maxpool_layer_kernels.cu.o] Error 1
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_crop_layer_kernels.cu.o] Error 1
+make[2]: *** [CMakeFiles/darknet_ros_lib.dir/__/darknet/src/darknet_ros_lib_generated_avgpool_layer_kernels.cu.o] Error 1
+make[1]: *** [CMakeFiles/darknet_ros_lib.dir/all] Error 2
+make: *** [all] Error 2

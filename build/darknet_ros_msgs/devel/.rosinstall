@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/pranit/catkin_ws/build/darknet_ros_msgs/devel/setup.sh
