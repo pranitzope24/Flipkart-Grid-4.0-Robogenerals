@@ -78,6 +78,12 @@ Now we can scan and list off all visible WiFi networks available to us by typing
 nmcli d wifi list
 ```
 
+### Testing your connection
+```bash
+ping google.com
+```
+Should give the ping rate in a constant frequency
+
 ### Troubleshooting
 
 If you experience intermittent WiFi connection through this adapter open a terminal window and enter the following command to turn Power Saving Mode off:
