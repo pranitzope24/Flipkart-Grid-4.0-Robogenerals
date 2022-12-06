@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/pranit/catkin_ws/src/navigation/build/devel/setup.sh
