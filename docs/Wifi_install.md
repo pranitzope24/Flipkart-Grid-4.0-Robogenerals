@@ -128,7 +128,7 @@ The values returned by these tools are purely fictional on this driver.
 However, you can still manually change the transmit power at compile time
 by editing the file `hal/rl8192e/rtl8192e_phycfg.c` and changing the lines below:
 
-```
+```c
 /* Manual Transmit Power Control 
    The following options take values from 0 to 63, where:
    0 - disable
