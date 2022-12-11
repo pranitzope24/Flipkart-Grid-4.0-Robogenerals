@@ -16,14 +16,20 @@ def func():
     drone.takeoff(5)
     rate = rospy.Rate(3)
 
+
     while not rospy.is_shutdown():
-        # have to add waypoint_g = data sybscribed from setpoint topic
-        a,b,c = drone.local_pos_pub.pose.pose.position.x,drone.local_pos_pub.pose.pose.position.y,drone.local_pos_pub.pose.pose.position.z
-        drone.set_destination(a,b,c,0)
-        rate.sleep()
-        if(drone.check_waypoint_reached(0.5,0.1)):
-            drone.land()
-            break
+        rospy.Subscriber(
+            name="{}mavros/setpoint_position/local".format(drone.ns),
+            data_class=PoseStamped,
+            queue_size=10,
+            callback=drone.set_cb,
+        )
+
+        rate.sleep() 
+        # if(drone.check_waypoint_reached()):
+        #     # drone.land()
+        #     print("sexyush")
+        #     break
 
 
 

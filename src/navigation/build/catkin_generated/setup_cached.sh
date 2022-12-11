@@ -8,6 +8,9 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/pranit/catkin_ws/src/navigation/build/devel:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/pranit/catkin_ws/src/navigation/build/devel/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/pranit/catkin_ws/src/navigation/build/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD='/home/pranit/catkin_ws/src/navigation/build'
+export PYTHONPATH="/home/pranit/catkin_ws/src/navigation/build/devel/lib/python2.7/dist-packages:$PYTHONPATH"
 export ROSLISP_PACKAGE_DIRECTORIES="/home/pranit/catkin_ws/src/navigation/build/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
 export ROS_PACKAGE_PATH="/home/pranit/catkin_ws/src/navigation:$ROS_PACKAGE_PATH"

@@ -113,6 +113,10 @@ class gnc_api:
 
         self.current_heading_g = degrees(psi) - self.local_offset_g
 
+    def set_cb(self,msg):
+        self.waypoint_g = msg
+        self.local_pos_pub.publish(self.waypoint_g)
+
     def enu_2_local(self):
         x, y, z = (
             self.current_pose_g.pose.pose.position.x,
@@ -315,11 +319,11 @@ class gnc_api:
                 0 (int): Arming successful.
                 -1 (int): Arming unsuccessful.
         """
-        self.set_destination(0, 0, 0, 0)
+        # self.set_destination(0, 0, 0, 0)
 
-        for _ in range(100):
-            self.local_pos_pub.publish(self.waypoint_g)
-            rospy.sleep(0.01)
+        # for _ in range(100):
+        #     self.local_pos_pub.publish(self.waypoint_g)
+        #     rospy.sleep(0.01)
 
         rospy.loginfo(CBLUE2 + "Arming Drone" + CEND)
 
@@ -349,12 +353,19 @@ class gnc_api:
         takeoff_srv = CommandTOLRequest(0, 0, 0, 0, takeoff_alt)
         response = self.takeoff_client(takeoff_srv)
         rospy.sleep(3)
+
+        while ( abs(self.current_pose_g.pose.pose.position.z - takeoff_alt) > 0.25):
+            pass
+
+        
         if response.success:
             rospy.loginfo(CGREEN2 + "Takeoff successful" + CEND)
             return 0
         else:
             rospy.logerr(CRED2 + "Takeoff failed" + CEND)
             return -1
+
+            
 
     def initialize_local_frame(self):
         """This function will create a local reference frame based on the starting location of the drone. This is typically done right before takeoff. This reference frame is what all of the the set destination commands will be in reference to."""
