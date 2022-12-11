@@ -15,8 +15,7 @@ def func():
 
     drone.takeoff(5)
     rate = rospy.Rate(3)
-
-
+    
     while not rospy.is_shutdown():
         rospy.Subscriber(
             name="{}mavros/setpoint_position/local".format(drone.ns),
