@@ -1,1 +1,0 @@
-/home/pranit/catkin_ws/devel/.private/navigation/share/roseus/ros/navigation/manifest.l
