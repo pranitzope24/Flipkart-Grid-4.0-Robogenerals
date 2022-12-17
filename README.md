@@ -8,6 +8,7 @@ cd drone_ws
 catkin init
 cd src
 
+echo ************* PLS NOTE THAT ****************
 echo ********** RUN MANUALLY IF GITHUB AUTHENTICATION ASKED ***********
 
 git clone https://github.com/pranitzope24/Flipkart-Grid-4.0-Robogenerals.git
