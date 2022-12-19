@@ -4,7 +4,8 @@
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find simulation)/worlds/grid_1.world"/>
     <arg name="gui" value="$(arg gui)"/>
-    <!-- more default parameters can be changed here -->
   </include>
-  <!-- </include file="$(find simulation)/launch/apm.launch" /> -->
+  <include file="/home/pranit/drone_ws/src/simulation/launch/apm.launch">
+    <arg name="fcu_url" value="udp://127.0.0.1:14551@14555"/>
+  </include>
 </launch>

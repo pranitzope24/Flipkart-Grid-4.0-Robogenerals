@@ -1,1 +1,0 @@
-rostopic pub -r 5 /mavros/setpoint_position/local geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "map"}, pose: {position: {x: 100.0, y: -100.0, z: 5.0}, orientation: {w: 0.0}}}'

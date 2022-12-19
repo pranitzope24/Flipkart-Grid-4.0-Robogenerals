@@ -365,8 +365,6 @@ class gnc_api:
             rospy.logerr(CRED2 + "Takeoff failed" + CEND)
             return -1
 
-            
-
     def initialize_local_frame(self):
         """This function will create a local reference frame based on the starting location of the drone. This is typically done right before takeoff. This reference frame is what all of the the set destination commands will be in reference to."""
         self.local_offset_g = 0.0

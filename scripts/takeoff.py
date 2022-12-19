@@ -29,6 +29,7 @@ def takeoff_drone():
     rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
 
 
+
 if __name__ == '__main__':
     try:
         takeoff_drone()
