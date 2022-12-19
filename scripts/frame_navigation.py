@@ -11,6 +11,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from term_colors import *
 from geometry_msgs.msg import TwistStamped
+
 times=0
 drone = gnc_api()
 frame_centre = [320.,240.]
@@ -50,21 +51,25 @@ def img_callback(data):
         gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
         rospy.loginfo(corners)
-        if corners==[]:
-            break
-        if not (thres(corners)):
-            break
-        rospy.loginfo("Centering code starts")
-        aruco.drawDetectedMarkers(cur_frame, corners)
-        # rospy.loginfo(corners)
-        v_x,v_y=reqd_velo(corners,0.1)
         velocity_pub = rospy.Publisher(
             name="/mavros/setpoint_velocity/cmd_vel",
             data_class=TwistStamped,
             queue_size=10,
         )
-
         vel = TwistStamped()
+        if corners==[]:
+            break
+        if not (thres(corners)):
+            vel.twist.linear.x = 0
+            vel.twist.linear.y = 0
+            velocity_pub.publish(vel)
+            rospy.loginfo("Velocity in x is "+str(vel.twist.linear.x)+ " and y is "+str(vel.twist.linear.x))
+            break
+        rospy.loginfo("Centering code starts")
+        aruco.drawDetectedMarkers(cur_frame, corners)
+        # rospy.loginfo(corners)
+        v_x,v_y=reqd_velo(corners,0.1)
+
 
         vel.twist.linear.x = -v_y
         vel.twist.linear.y = -v_x
