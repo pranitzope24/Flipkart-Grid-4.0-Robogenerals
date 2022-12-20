@@ -1,5 +1,0 @@
-while (centre - marker > thres){
-    setvel(vector) = k * marker-centre;
-}
-
-drone.land()
