@@ -116,9 +116,3 @@ if __name__ == '__main__':
     takeoff_drone()
     recv()
 
-
-'''
-
-
-
-'''
