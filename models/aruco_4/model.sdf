@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <sdf version="1.6">
-  <model name="aruco_">
+  <model name="aruco_4">
     <link name="link">
       <inertial>
         <pose>0 0 0 0 0 0</pose>
-        <mass>0.050</mass>
+        <mass>0.001</mass>
         <inertia>
           <ixx>3.7499999999999997e-06</ixx>
           <ixy>0.0</ixy>
@@ -18,14 +18,14 @@
         <pose>0.00005 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0762 0.0762 0.0762</size>
+            <size>0.0001 0.15 0.15</size>
           </box>
         </geometry>
         <material>
           <script>
-            <uri>model://aruco_box_1/materials/scripts</uri>
-            <uri>model://aruco_box_1/materials/textures</uri>
-            <name>Marker</name>
+            <uri>model://aruco_4/materials/scripts</uri>
+            <uri>model://aruco_4/materials/textures</uri>
+            <name>Marker4</name>
           </script>
         </material>
       </visual>
@@ -34,7 +34,7 @@
         <pose>-0.00005 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0762 0.0762 0.0762</size>
+            <size>0.0001 0.15 0.15</size>
           </box>
         </geometry>
       </visual>
@@ -42,7 +42,7 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0762 0.0762 0.0762</size>
+            <size>0.0001 0.15 0.15</size>
           </box>
         </geometry>
       </collision>

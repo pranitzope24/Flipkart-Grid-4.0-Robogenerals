@@ -1,4 +1,4 @@
-material Marker
+material Marker4
 {
   technique
   {
@@ -6,7 +6,7 @@ material Marker
     {
       texture_unit
       {
-        texture marker.png
+        texture marker4.png
         filtering anisotropic
         max_anisotropy 16
       }
