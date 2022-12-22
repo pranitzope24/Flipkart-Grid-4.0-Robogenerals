@@ -3,7 +3,6 @@
 # -*- coding: utf-8 -*-
 
 import rospy
-import time
 from py_gnc import *
 import cv2
 import cv2.aruco as aruco
@@ -61,9 +60,7 @@ def img_callback(data):
     gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
 
-    ################################################################################################ 
-
-    while ids is not None and corners is not None  and times == 0: ##### marker ka id is 0
+    while ids is not None and corners is not None  and times == 0: ## Phase 1
         gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
         aruco.drawDetectedMarkers(cur_frame, corners)
