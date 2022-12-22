@@ -10,7 +10,7 @@ import cv2.aruco as aruco
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from term_colors import *
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped,PoseStamped
 
 times=0
 drone = gnc_api()
@@ -38,17 +38,18 @@ def thres(corners):
     lst1=aruco_centre(corners)
     
     mag=((lst1[0]-frame_centre[0])**2+(lst1[1]-frame_centre[1])**2)**(0.5)
-    if(mag>20):
+    if(mag>10):
         return mag
     return 0
 
-def get_aruco_info(corners,ids):
-    no=0
-    pairs=[]
-    for i in range(len(corners[0])):
-        no+=1
-        pairs.append([corners[0][i],ids[i][0]])
-    return pairs,no
+# def get_aruco_info(corners,ids):
+#     no=0
+#     pairs=[]
+#     for i in range(len(corners[0])):
+#         no+=1
+#         pairs.append([corners[0][i],ids[i][0]])
+#     return pairs,no
+
 
 def img_callback(data):
     br=CvBridge()
@@ -56,92 +57,114 @@ def img_callback(data):
     gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
 
-    while len(ids) and len(corners) and times == 0:
+    ################################################################################################ 
+
+    while ids is not None and corners is not None  and times == 0: ##### marker ka id is 0
         gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
         aruco.drawDetectedMarkers(cur_frame, corners)
+
         velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
         vel = TwistStamped()
-        curpos_z = drone.current_pose_g.pose.pose.position.z
+
+        if ids is None:
+            break
 
         global mp
         mp.clear()
-
+    
         for i in range(len(ids)):
             mp[ids[i][0]]=[[corners[i][0]]]
+        
+        if 0 not in mp.keys():
+            break
+        
+        if corners==[]:
+            break
 
-        
-        if(abs(curpos_z - 1) < 0.2) or (curpos_z < 0.5):
-            end_phase1()
-            break
         if not (thres(mp[0])):
-            vel.twist.linear.x = 0
-            vel.twist.linear.y = 0
-            vel.twist.linear.z = -0.2
-            
-            velocity_pub.publish(vel)
+            hovering_phase()
             break
+
         aruco.drawDetectedMarkers(cur_frame, corners)
-        
         
         v_x,v_y = reqd_velo(mp[0],0.1)
 
         vel.twist.linear.x = -v_y
         vel.twist.linear.y = -v_x
-    
+        
         velocity_pub.publish(vel)
 
-    while len(ids) and len(corners)  and times == 1:
+    
+    while ids is not None and corners is not None  and times == 1: ##### marker ka id is 0
         gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
         aruco.drawDetectedMarkers(cur_frame, corners)
+        
         velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
         vel = TwistStamped()
-        curpos_z = drone.current_pose_g.pose.pose.position.z
+
+        if ids is None:
+            break
 
         global mp
         mp.clear()
-
+        #one change here
         for i in range(len(ids)):
             mp[ids[i][0]]=[[corners[i][0]]]
-
-        if(abs(curpos_z - 1) < 0.2) or (curpos_z < 0.5):
-            end_phase1()
+        
+        if 4 not in mp.keys():
+            break
+    
+        if corners==[]:
             break
 
         if not (thres(mp[4])):
-            vel.twist.linear.x = 0
-            vel.twist.linear.y = 0
-            vel.twist.linear.z = -0.2
-            
-            velocity_pub.publish(vel)
+            hovering_phase()
             break
+
         aruco.drawDetectedMarkers(cur_frame, corners)
-        
         
         v_x,v_y = reqd_velo(mp[4],0.1)
 
         vel.twist.linear.x = -v_y
         vel.twist.linear.y = -v_x
     
-        velocity_pub.publish(vel)        
+        velocity_pub.publish(vel)
 
- 
-def end_phase1 ():
-    rospy.loginfo("reached here")
-    drone.land()
-    time.sleep(20)
-    rospy.loginfo("Initialising Takeoff")
-    takeoff_again(3)
+    if(times > 1) :
+        rtl()
+        rospy.loginfo(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
+        exit()
+
+def hovering_phase():
+
+    pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
+    poser=PoseStamped()
+    cur_x = drone.current_pose_g.pose.pose.position.x
+    cur_y = drone.current_pose_g.pose.pose.position.y
+
+    poser.pose.position.x = cur_x
+    poser.pose.position.y = cur_y
+    poser.pose.position.z = 0.3
+    pose_pub.publish(poser)
+    rospy.loginfo("First pose was given")
+    rospy.sleep(10)
+    
+    rospy.loginfo("Second pose was given")
+    while (drone.current_pose_g.pose.pose.position.z < 2.95):
+        poser.pose.position.z = 3
+        pose_pub.publish(poser)
+
     global times
     times += 1
     return
 
-def recv():
-    rospy.Subscriber('/webcam/image_raw',Image,img_callback)
-    rospy.spin()
-    cv2.destroyAllWindows()
-     
+def rtl():
+    drone.set_mode("RTL")
+    global times
+    times += 1
+
 def takeoff_drone(): 
     drone.wait4connect()
     drone.wait4start()
@@ -150,10 +173,13 @@ def takeoff_drone():
     rate = rospy.Rate(3)
     rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
 
+def recv():
+    rospy.Subscriber('/webcam/image_raw',Image,img_callback)
+    rospy.spin()
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     # print(k)
     rospy.init_node("drone_controller", anonymous=True)
     takeoff_drone()
     recv()
-

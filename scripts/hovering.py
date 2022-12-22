@@ -10,7 +10,8 @@ import cv2.aruco as aruco
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from term_colors import *
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, PoseStamped
+from mavros_msgs.srv import CommandBool
 
 times=0
 drone = gnc_api()
@@ -53,13 +54,6 @@ def get_aruco_info(corners,ids):
         pairs.append([corners[0][i],ids[i][0]])
     return pairs,no
 
-def get_dict(a):
-    corners,ids,_=a
-    dict={}
-    for i in range(len(ids)):
-        dict[ids[i][0]]=corners[i][0]
-    return dict
-
 def img_callback(data):
     br=CvBridge()
     cur_frame=br.imgmsg_to_cv2(data)
@@ -68,32 +62,22 @@ def img_callback(data):
 
     ################################################################################################ 
 
-    while ids!=None and corners!=None  and times == 0: ##### marker ka id is 0
+    while ids is not None and corners is not None  and times == 0: ##### marker ka id is 0
         gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
-        corner_dict = get_dict(aruco.detectMarkers(gray, aruco_dict))
         aruco.drawDetectedMarkers(cur_frame, corners)
         velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
         vel = TwistStamped()
-        curpos_z = drone.current_pose_g.pose.pose.position.z
-
-        if(abs(curpos_z - 1) < 0.2) or (curpos_z < 0.5):
-            end_phase1()
-            break
 
         if corners==[]:
             break
+
         rospy.loginfo(corners)
         rospy.loginfo(thres(corners))
         if not (thres(corners)):
-            vel.twist.linear.x = 0
-            vel.twist.linear.y = 0
-            vel.twist.linear.z = -0.2
-            
-            velocity_pub.publish(vel)
+            hovering_phase()
             break
 
-        rospy.loginfo("Centering code starts")
         aruco.drawDetectedMarkers(cur_frame, corners)
         
         v_x,v_y = reqd_velo(corners,0.1)
@@ -106,6 +90,27 @@ def img_callback(data):
         velocity_pub.publish(vel)
         rospy.loginfo("We reached here")
 
+def hovering_phase():
+
+    pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
+    poser=PoseStamped()
+    cur_x = drone.current_pose_g.pose.pose.position.x
+    cur_y = drone.current_pose_g.pose.pose.position.y
+
+    poser.pose.position.x = cur_x
+    poser.pose.position.y = cur_y
+    poser.pose.position.z = 0.15
+    pose_pub.publish(poser)
+    rospy.loginfo("First pose was given")
+    rospy.sleep(15)
+
+    poser.pose.position.z = 3
+    pose_pub.publish(poser)
+    rospy.loginfo("Second pose was given")
+
+    global times
+    times += 1
+    return
 
  
 def end_phase1 ():
