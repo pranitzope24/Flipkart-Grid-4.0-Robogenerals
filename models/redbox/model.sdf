@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <sdf version="1.6">
-  <model name="aruco_4">
+  <model name="redbox">
     <link name="link">
       <inertial>
         <pose>0 0 0 0 0 0</pose>
@@ -18,14 +18,14 @@
         <pose>0.00005 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.20 0.20</size>
+            <size>0.076 0.076 0.076</size>
           </box>
         </geometry>
         <material>
           <script>
-            <uri>model://aruco_4/materials/scripts</uri>
-            <uri>model://aruco_4/materials/textures</uri>
-            <name>Marker4</name>
+            <uri>model://redbox/materials/scripts</uri>
+            <uri>model://redbox/materials/textures</uri>
+            <name>Red</name>
           </script>
         </material>
       </visual>
@@ -34,7 +34,7 @@
         <pose>-0.00005 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.20 0.20</size>
+            <size>0.076 0.076 0.076</size>
           </box>
         </geometry>
       </visual>
@@ -42,7 +42,7 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.20 0.20</size>
+            <size>0.076 0.076 0.076</size>
           </box>
         </geometry>
       </collision>

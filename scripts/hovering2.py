@@ -41,19 +41,6 @@ def thres(corners):
         return mag
     return 0
 
-def takeoff_drone(): 
-    drone.wait4connect()
-    drone.wait4start()
-    drone.initialize_local_frame()
-    drone.takeoff(3)
-    rate = rospy.Rate(3)
-    rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
-
-def recv():
-    rospy.Subscriber('/webcam/image_raw',Image,img_callback)
-    rospy.spin()
-    cv2.destroyAllWindows()
-
 def img_callback(data):
     br=CvBridge()
     cur_frame=br.imgmsg_to_cv2(data)
@@ -68,7 +55,7 @@ def img_callback(data):
         velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
         vel = TwistStamped()
 
-        if ids is None or corners is None:
+        if ids is None:
             break
 
         global mp
@@ -105,7 +92,7 @@ def img_callback(data):
         velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
         vel = TwistStamped()
 
-        if ids is None or corners is None:
+        if ids is None:
             break
 
         global mp
@@ -136,7 +123,6 @@ def img_callback(data):
         
 
 def hovering_phase():
-
     pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
     poser=PoseStamped()
     cur_x = drone.current_pose_g.pose.pose.position.x
@@ -150,8 +136,8 @@ def hovering_phase():
     rospy.sleep(10)
     
     rospy.loginfo("Second pose was given")
-    while (drone.current_pose_g.pose.pose.position.z < 2.95):
-        poser.pose.position.z = 3
+    while (drone.current_pose_g.pose.pose.position.z < 1.95):
+        poser.pose.position.z = 2
         pose_pub.publish(poser)
 
     global times
@@ -163,6 +149,18 @@ def rtl():
     global times
     times += 1
 
+def takeoff_drone(): 
+    drone.wait4connect()
+    drone.wait4start()
+    drone.initialize_local_frame()
+    drone.takeoff(2)
+    rate = rospy.Rate(3)
+    rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
+
+def recv():
+    rospy.Subscriber('/webcam/image_raw',Image,img_callback)
+    rospy.spin()
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     # print(k)
