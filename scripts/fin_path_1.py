@@ -15,6 +15,8 @@ times=0
 drone = gnc_api()
 frame_centre = [320.,240.]
 pixel_threshold = 10
+reached_marker_0 = 0
+reached_marker_4 = 0
 
 #    Marker Coordinates
 
@@ -47,74 +49,83 @@ def thres(corners):
     return 0
 
 def img_callback(data):
+    global times
+    global reached_marker_0
+    global reached_marker_4
+
     br=CvBridge()
     cur_frame=br.imgmsg_to_cv2(data)
     gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
+    aruco.drawDetectedMarkers(cur_frame, corners)
 
-    # while ids is not None and corners is not None  and times == 0: ## Phase 1
-    if (times == 0) and ids is not None and corners is not None :
-        gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
-        aruco.drawDetectedMarkers(cur_frame, corners)
-        velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
-        vel = TwistStamped()
+    mp.clear()
 
-        if ids is None:
-            pass
-
-        global mp
-        mp.clear()
-    
+    if ids is not None:
         for i in range(len(ids)):
             mp[ids[i][0]]=[[corners[i][0]]]
-        
-        if 0 not in mp.keys():
-            pass
-        
-        if corners==[]:
-            pass
+    
+    velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel", TwistStamped, queue_size=10)
+    vel = TwistStamped()
 
+
+    if (times == 0) and (0 not in mp.keys()):
+        reached_marker_0 = 1
+        # cv2.imshow('liveimg',cur_frame)
+        # cv2.waitKey(1)
+
+        vel.twist.linear.y = 0.2
+        velocity_pub.publish(vel)
+        return
+
+
+    if (reached_marker_0 == 1):
+        vel.twist.linear.y = 0
+        times += 1
+        velocity_pub.publish(vel)
+        reached_marker_0 = 0
+
+
+    if (0 in mp.keys()) and (times == 1): ## Phase 1
         if not (thres(mp[0])):
             hovering_phase()
-            pass
+            return
 
         aruco.drawDetectedMarkers(cur_frame, corners)
         
-        v_x,v_y = reqd_velo(mp[0],0.1)
+        v_x,v_y = reqd_velo(mp[0],0.2)
 
         vel.twist.linear.x = -v_y
         vel.twist.linear.y = -v_x
         
         velocity_pub.publish(vel)
-
-    rospy.loginfo("sex")
-
+        return
 
 
-    while ids is not None and corners is not None  and times == 1: ##### marker ka id is 0
-        gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
-        aruco.drawDetectedMarkers(cur_frame, corners)
+    if (times == 2) and (4 not in mp.keys()):
+        reached_marker_4 = True
+        # cv2.imshow('liveimg',cur_frame)
+        # cv2.waitKey(1)
+
+        ### SET DEST OR VEL ACCORDING TO ALGORITHM
+        vel.twist.linear.y = -0.2
+        vel.twist.linear.x = -0.1
+        ##########################################
         
-        velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel",TwistStamped,queue_size=10)
-        vel = TwistStamped()
+        velocity_pub.publish(vel)
+        return
 
-        if ids is None:
-            break
+    if (reached_marker_4 == True):
+        vel.twist.linear.y = 0
+        times += 1
+        velocity_pub.publish(vel)
+        reached_marker_4 = False
 
-        global mp
-        mp.clear()
-        #one change here
-        for i in range(len(ids)):
-            mp[ids[i][0]]=[[corners[i][0]]]
-        
-        if 4 not in mp.keys():
-            break
 
+    if (4 in mp.keys()) and (times == 3): ## Phase 1
         if not (thres(mp[4])):
             hovering_phase()
-            break
+            return
 
         aruco.drawDetectedMarkers(cur_frame, corners)
         
@@ -122,12 +133,15 @@ def img_callback(data):
 
         vel.twist.linear.x = -v_y
         vel.twist.linear.y = -v_x
-    
+        
         velocity_pub.publish(vel)
+        return
 
-    if(times > 1) :
-        rtl()
+    if times==4:
         rospy.loginfo(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
+
+    if(times > 3) :
+        rtl()
         
 
 def hovering_phase():
@@ -140,10 +154,10 @@ def hovering_phase():
     poser.pose.position.y = cur_y
     poser.pose.position.z = 0.3
     pose_pub.publish(poser)
-    rospy.loginfo("First pose was given")
+    # rospy.loginfo("First pose was given")
     rospy.sleep(10)
     
-    rospy.loginfo("Second pose was given")
+    # rospy.loginfo("Second pose was given")
     while (drone.current_pose_g.pose.pose.position.z < 1.95):
         poser.pose.position.z = 2
         pose_pub.publish(poser)
