@@ -215,7 +215,7 @@ class gnc_api:
         SetMode_srv = SetModeRequest(0, mode)
         response = self.set_mode_client(SetMode_srv)
         if response.mode_sent:
-            rospy.loginfo(CGREEN2 + "SetMode Was successful" + CEND)
+            # rospy.loginfo(CGREEN2 + "SetMode Was successful" + CEND)
             return 0
         else:
             rospy.logerr(CRED2 + "SetMode has failed" + CEND)
