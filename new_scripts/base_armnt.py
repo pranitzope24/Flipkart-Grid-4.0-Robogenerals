@@ -10,6 +10,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from term_colors import *
 from geometry_msgs.msg import TwistStamped,PoseStamped
+import time
 
 times=0
 drone = gnc_api()
@@ -48,13 +49,14 @@ def thres(corners):
         return mag
     return 0
 
-def img_callback(data):
+def img_callback():
     global times
     global reached_marker_0
     global reached_marker_4
 
-    br=CvBridge()
-    cur_frame=br.imgmsg_to_cv2(data)
+
+    cap=cv2.VideoCapture(2)
+    ret,cur_frame=cap.read()
     gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
     aruco.drawDetectedMarkers(cur_frame, corners)
@@ -74,13 +76,18 @@ def img_callback(data):
         # cv2.imshow('liveimg',cur_frame)
         # cv2.waitKey(1)
 
-        vel.twist.linear.y = 0.2
+        vel.twist.linear.x = 0.2
+        vel.twist.linear.y = 0
+        vel.twist.linear.z = 0
         velocity_pub.publish(vel)
         return
 
 
     if (reached_marker_0 == 1):
+        vel.twist.linear.x = 0
         vel.twist.linear.y = 0
+        vel.twist.linear.z = 0
+        
         times += 1
         velocity_pub.publish(vel)
         reached_marker_0 = 0
@@ -95,72 +102,25 @@ def img_callback(data):
         
         v_x,v_y = reqd_velo(mp[0],0.2)
 
-        vel.twist.linear.x = -v_y
-        vel.twist.linear.y = -v_x
+        vel.twist.linear.x = -v_x
+        vel.twist.linear.y = -v_y
         
         velocity_pub.publish(vel)
         return
 
-
-    if (times == 2) and (4 not in mp.keys()):
-        reached_marker_4 = True
-        # cv2.imshow('liveimg',cur_frame)
-        # cv2.waitKey(1)
-
-        ### SET DEST OR VEL ACCORDING TO ALGORITHM
-        vel.twist.linear.y = -0.2
-        vel.twist.linear.x = -0.1
-        ##########################################
-        
-        velocity_pub.publish(vel)
-        return
-
-    if (reached_marker_4 == True):
-        vel.twist.linear.y = 0
-        times += 1
-        velocity_pub.publish(vel)
-        reached_marker_4 = False
-
-
-    if (4 in mp.keys()) and (times == 3): ## Phase 1
-        if not (thres(mp[4])):
-            hovering_phase()
-            return
-
-        aruco.drawDetectedMarkers(cur_frame, corners)
-        
-        v_x,v_y = reqd_velo(mp[4],0.1)
-
-        vel.twist.linear.x = -v_y
-        vel.twist.linear.y = -v_x
-        
-        velocity_pub.publish(vel)
-        return
-
-    if times==4:
-        rospy.loginfo(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
-
-    if(times > 3) :
-        rtl()
         
 
 def hovering_phase():
-    pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
-    poser=PoseStamped()
-    cur_x = drone.current_pose_g.pose.pose.position.x
-    cur_y = drone.current_pose_g.pose.pose.position.y
-
-    poser.pose.position.x = cur_x
-    poser.pose.position.y = cur_y
-    poser.pose.position.z = 0.3
-    pose_pub.publish(poser)
-    # rospy.loginfo("First pose was given")
-    rospy.sleep(10)
+    velocity_pub = rospy.Publisher("/mavros/setpoint_velocity/cmd_vel", TwistStamped, queue_size=10)
+    vel = TwistStamped()
     
-    # rospy.loginfo("Second pose was given")
-    while (drone.current_pose_g.pose.pose.position.z < 1.95):
-        poser.pose.position.z = 2
-        pose_pub.publish(poser)
+    duration = 5
+    start = time.time()
+    while time.time()-start < duration :
+        vel.twist.linear.x=0
+        vel.twist.linear.y=0
+        vel.twist.linear.z=-0.2
+        velocity_pub.publish(vel)
 
     global times
     times += 1
@@ -180,7 +140,9 @@ def takeoff_drone():
     rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
 
 def recv():
-    rospy.Subscriber('/webcam/image_raw',Image,img_callback)
+    #rospy.Subscriber('/webcam/image_raw',Image,img_callback)
+    while(not rospy.is_shutdown()):
+        img_callback()
     rospy.spin()
     cv2.destroyAllWindows()
 

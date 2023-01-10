@@ -14,18 +14,24 @@ def takeoff_drone():
     rospy.init_node("drone_controller", anonymous=True)
 
     drone = gnc_api()
-
     drone.wait4connect()
     drone.wait4start()
 
     drone.initialize_local_frame()
     drone.takeoff(2)
-    rate = rospy.Rate(2)
+    # while(drone.current_pose_g.pose.pose.position.z <= 1.9):
+    #     msg = PoseStamped()
+    #     msg.pose.position.z=2
+    #     drone.local_pos_pub.publish(msg)
+
     rospy.loginfo(CGREEN2 + "Takeoff Completed" + CEND)
-    rospy.sleep(5)
-    drone.land()
 
+    while(drone.current_pose_g.pose.pose.position.z >=0.6):
+        msg = PoseStamped()
+        msg.pose.position.z = 0.5
+        drone.local_pos_pub.publish(msg)
 
+    rospy.loginfo("Hogya")
 
 if __name__ == '__main__':
     try:
