@@ -17,7 +17,7 @@ frame_centre = [320.,240.]
 pixel_threshold = 10
 reached_marker_0 = 0
 reached_marker_4 = 0
-
+reached_color=0
 #    Marker Coordinates
 
 #    x: -1.58653998375
@@ -48,17 +48,31 @@ def thres(corners):
         return mag
     return 0
 
+def thres_col(cent_x,cent_y):
+    mag_col=((cent_x-frame_centre[0])**2+(cent_y-frame_centre[1])**2)**(0.5)
+    if(mag_col>10):
+        return mag_col
+    return 0
+
+
 def img_callback(data):
     global times
     global reached_marker_0
     global reached_marker_4
+    global reached_color
 
     br=CvBridge()
     cur_frame=br.imgmsg_to_cv2(data)
     gray = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2GRAY)
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict)
-    aruco.drawDetectedMarkers(cur_frame, corners)
+    # aruco.drawDetectedMarkers(cur_frame, corners)
+    img_hsv = cv2.cvtColor(cur_frame, cv2.COLOR_BGR2HSV)
 
+    mask = cv2.inRange(img_hsv, (5, 50, 50), (15, 255, 255))
+
+    contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    
     mp.clear()
 
     if ids is not None:
@@ -92,7 +106,7 @@ def img_callback(data):
             hovering_phase(1)
             return
 
-        aruco.drawDetectedMarkers(cur_frame, corners)
+        # aruco.drawDetectedMarkers(cur_frame, corners)
         
         v_x,v_y = reqd_velo(mp[0],0.2)
         rospy.loginfo_once("Centering on Box 1")
@@ -125,7 +139,7 @@ def img_callback(data):
             hovering_phase(2)
             return
 
-        aruco.drawDetectedMarkers(cur_frame, corners)
+        # aruco.drawDetectedMarkers(cur_frame, corners)
         
         v_x,v_y = reqd_velo(mp[4],0.1)
 
@@ -135,10 +149,49 @@ def img_callback(data):
         velocity_pub.publish(vel)
         return
 
-    if times==4:
+    if (times == 4):
+        # cv2.imshow('liveimg',cur_frame)
+        # cv2.waitKey(1)
+        rospy.loginfo("Finding Second Box")
+        vel.twist.linear.y = 0.2
+        velocity_pub.publish(vel)
+        if len(contours):
+            times+=1
+        return
+    if (times==5):
+        if len(contours):
+            for c in contours:
+                area = cv2.contourArea(c)
+                print (area)
+                if area > 60:
+                    
+                    x,y,w,h = cv2.boundingRect(c)
+                    cur_frame = cv2.rectangle(cur_frame, (x,y), (x+w,y+h), (0,0,255), 5)
+                    x_c=x+w//2
+                    y_c=y+h//2
+                    if not thres_col(x_c,y_c):
+                        rospy.loginfo_once("Going down now")
+                        hovering_phase(1)
+                        times+=1
+                        return
+                    rospy.loginfo("Centering on box")
+                    v_x=x_c-frame_centre[0]
+                    v_y=y_c-frame_centre[1]
+                    p=(v_x**2+v_y**2)**(0.5)
+                    v_x,v_y=0.2*v_x/p,0.2*v_y/p
+                    vel.twist.linear.x = -v_y
+                    vel.twist.linear.y = -v_x
+                    velocity_pub.publish(vel)
+                    return
+                    
+                    
+                    
+
+
+    if times==6:
         rospy.loginfo(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
 
-    if(times > 3) :
+    if(times > 5) :
         rtl()
         
 
