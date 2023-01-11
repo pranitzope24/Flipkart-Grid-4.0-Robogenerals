@@ -17,7 +17,8 @@ frame_centre = [320.,240.]
 pixel_threshold = 10
 reached_marker_0 = 0
 reached_marker_4 = 0
-reached_color=0
+reached_color = 0
+reached_marker_4_2 = 0
 #    Marker Coordinates
 
 #    x: -1.58653998375
@@ -60,6 +61,7 @@ def img_callback(data):
     global reached_marker_0
     global reached_marker_4
     global reached_color
+    global reached_marker_4_2
 
     br=CvBridge()
     cur_frame=br.imgmsg_to_cv2(data)
@@ -150,15 +152,14 @@ def img_callback(data):
         return
 
     if (times == 4):
-        # cv2.imshow('liveimg',cur_frame)
-        # cv2.waitKey(1)
-        rospy.loginfo("Finding Second Box")
+        rospy.loginfo_once("Finding Second Box")
         vel.twist.linear.y = 0.2
         velocity_pub.publish(vel)
         if len(contours):
             times+=1
         return
-    if (times==5):
+
+    if (times == 5):
         if len(contours):
             for c in contours:
                 area = cv2.contourArea(c)
@@ -172,9 +173,8 @@ def img_callback(data):
                     if not thres_col(x_c,y_c):
                         rospy.loginfo_once("Going down now")
                         hovering_phase(1)
-                        times+=1
                         return
-                    rospy.loginfo("Centering on box")
+                    rospy.loginfo_once("Centering on box")
                     v_x=x_c-frame_centre[0]
                     v_y=y_c-frame_centre[1]
                     p=(v_x**2+v_y**2)**(0.5)
@@ -183,15 +183,40 @@ def img_callback(data):
                     vel.twist.linear.y = -v_x
                     velocity_pub.publish(vel)
                     return
-                    
-                    
-                    
 
+    if (times == 6) and (4 not in mp.keys()):
+        reached_marker_4_2 = True
+        vel.twist.linear.y = -0.2
+        rospy.loginfo_once("Searching Dropzone")
+        
+        velocity_pub.publish(vel)
+        return
 
-    if times==6:
-        rospy.loginfo(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
+    if (reached_marker_4_2 == True):
+        vel.twist.linear.y = 0
+        times += 1
+        velocity_pub.publish(vel)
+        reached_marker_4_2 = False
+        rospy.loginfo_once("Found Dropzone")
 
-    if(times > 5) :
+    if (4 in mp.keys()) and (times == 7):
+        ## Phase 1
+        if not (thres(mp[4])):
+            rospy.loginfo("Zoning")
+            hovering_phase(2)
+            return
+
+        v_x,v_y = reqd_velo(mp[4],0.1)
+
+        vel.twist.linear.x = -v_y
+        vel.twist.linear.y = -v_x
+        rospy.loginfo_once("Centering on Dropzone")
+        velocity_pub.publish(vel)
+        
+        return
+
+    if times == 8:
+        rospy.loginfo_once(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
         rtl()
         
 
