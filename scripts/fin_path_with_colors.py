@@ -163,7 +163,6 @@ def img_callback(data):
         if len(contours):
             for c in contours:
                 area = cv2.contourArea(c)
-                print (area)
                 if area > 60:
                     
                     x,y,w,h = cv2.boundingRect(c)
@@ -215,7 +214,7 @@ def img_callback(data):
         
         return
 
-    if times == 8:
+    if times > 7:
         rospy.loginfo_once(CBOLD + CGREEN + "MISSION SUCCESSFUL, RETURNING TO BASE !" + CEND)
         rtl()
         
