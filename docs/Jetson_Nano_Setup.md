@@ -24,4 +24,4 @@ Use the setup script here named `ros.sh` for installing ROS Melodic.
 
 ## Mavros and other important software
 
-Use the setup script here named `mavros.sh` for installing Mavros, Mavproxy, pymavlink and their dependancies.
+Use the setup script here named `mavros.sh` for installing Mavros, Mavproxy, pymavlink and their dependencies.
